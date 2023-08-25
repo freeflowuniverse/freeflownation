@@ -1,0 +1,5 @@
+*.dSYM
+src/static
+.env
+.docs
+src/db
