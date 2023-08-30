@@ -28,7 +28,7 @@ mut:
 	db sqlite.DB = sqlite.connect('freeflownation.db') or { panic(err) }
 pub mut:
 	logger &log.Logger = &log.Logger(&log.Log{
-	level: .info
+	level: .debug
 })
 }
 

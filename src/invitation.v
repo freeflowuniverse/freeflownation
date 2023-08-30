@@ -1,11 +1,27 @@
 module freeflownation
 
+import rand
 // // CRUD invitation operations
 
-pub fn (mut app App) create_invitation(invitation Invitation) {
-	sql app.db {
-		insert invitation into Invitation
-	} or { panic(err) }
+[params]
+pub struct InvitationConfig {
+	name string
+	email string
+}
+
+pub fn (mut app App) new_invitation(token string, config InvitationConfig) !Invitation {
+	caller_id := app.auth_client.get_token_subject(token) or {
+		return AuthError{reason: .unauthenticated}
+	}
+
+	invitation_code := 'FFN-${rand.string(8)}'
+	invitation := Invitation {
+		firstname: config.name
+		email: config.email
+		code: invitation_code
+	}
+	// app.create_invitation(invitation)
+	return invitation
 }
 
 // pub fn (app App) read_invitation(id string) ?Invitation {

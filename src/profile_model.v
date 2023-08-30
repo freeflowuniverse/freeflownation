@@ -9,7 +9,7 @@ pub struct Profile {
 	title      string
 	bio        string
 	education  string
-	location   Location [fkey: 'id']
+	// location   Location [fkey: 'id']
 	// occupations []Occupation
 	// skills []string
 	// hobbies []string

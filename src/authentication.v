@@ -20,7 +20,7 @@ pub fn (mut app App) register(params RegisterParams) ! {
 	if app.email_exists(params.email) {
 		return error('Citizen with email exists.')
 	}
-	if app.code_is_valid(params.code) {
+	if !app.code_is_valid(params.code) {
 		return error('Invitation is already used.')
 	}
 
@@ -64,8 +64,9 @@ pub fn (mut app App) login(params LoginParams) !session.AuthTokens {
 	app.logger.debug('Generating authentication tokens for citizen ${citizen_id}')
 	
 	auth_tokens := app.auth_client.new_auth_tokens(
+		user_id: citizen_id
 		subject: citizen_id
-		expiration: if params.remember_me { time.now().add_days(30) } else { time.now() }
+		expiration: if params.remember_me { time.now().add_days(30) } else { time.now().add_days(1) }
 	) or { return error('') }
 	return auth_tokens
 }

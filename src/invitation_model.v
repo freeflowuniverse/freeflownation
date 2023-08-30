@@ -6,11 +6,13 @@ import time
 import vweb
 
 pub struct Invitation {
-	id        int    [primary]
+pub:
+	id        string    [primary]
 	code      string [unique] // invitation code
 	firstname string
 	lastname  string
 	email     string
 	phone     string
-	invitee   string // id of citizen receiving the invitation
+	invitor_id string 
+	invitee_id   string // id of citizen receiving the invitation
 }

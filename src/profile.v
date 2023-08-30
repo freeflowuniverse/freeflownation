@@ -11,7 +11,9 @@ import vweb
 // }
 
 pub fn (app App) get_profile(profile_id string, token string) !Profile {
-	user_id := app.auth_client.get_token_subject(token)!
+	caller_id := app.auth_client.get_token_subject(token) or {
+		return AuthError{reason: .unauthenticated}
+	} // todo: rename get_authenticated_subject
 	profile := app.get_profile_by_id(profile_id) or { return error('Profile not found') }
 	return profile
 }
