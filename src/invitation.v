@@ -1,7 +1,7 @@
 module freeflownation
 
 import rand
-// // CRUD invitation operations
+import json
 
 [params]
 pub struct InvitationConfig {
@@ -9,10 +9,13 @@ pub struct InvitationConfig {
 	email string
 }
 
-pub fn (mut app App) new_invitation(token string, config InvitationConfig) !Invitation {
-	caller_id := app.auth_client.get_token_subject(token) or {
-		return AuthError{reason: .unauthenticated}
-	}
+pub fn (mut app App) new_invitation(config InvitationConfig) !Invitation {
+	app.logger.debug('Creating new invitation: ${json.encode(config)}')
+	
+	app.authorize_by_role(
+		user_id: app.user_id,
+		role: .citizen
+	)!
 
 	invitation_code := 'FFN-${rand.string(8)}'
 	invitation := Invitation {
@@ -20,7 +23,9 @@ pub fn (mut app App) new_invitation(token string, config InvitationConfig) !Invi
 		email: config.email
 		code: invitation_code
 	}
-	// app.create_invitation(invitation)
+	
+	app.create_invitation(invitation)
+	app.logger.info('Created new invitation.')
 	return invitation
 }
 

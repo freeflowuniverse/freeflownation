@@ -20,7 +20,7 @@ pub fn (mut app App) register(params RegisterParams) ! {
 	if app.email_exists(params.email) {
 		return error('Citizen with email exists.')
 	}
-	if !app.code_is_valid(params.code) {
+	if !app.invitation_is_valid(params.code) {
 		return error('Invitation is already used.')
 	}
 
@@ -50,7 +50,7 @@ pub struct LoginParams {
 
 // login logs a user in by sending a verification link to their email
 pub fn (mut app App) login(params LoginParams) !session.AuthTokens {
-	app.logger.info('Logging in: ${json.encode(params)}')
+	app.logger.debug('Logging in: ${json.encode(params)}')
 	if !app.email_exists(params.email) {
 		return error("Citizen with email doesn't exists.")
 	}
@@ -62,12 +62,16 @@ pub fn (mut app App) login(params LoginParams) !session.AuthTokens {
 	citizen_id := app.get_id_from_email(params.email)
 	app.logger.info('Citizen ${citizen_id} logged in')
 	app.logger.debug('Generating authentication tokens for citizen ${citizen_id}')
-	
+
 	auth_tokens := app.auth_client.new_auth_tokens(
 		user_id: citizen_id
 		subject: citizen_id
 		expiration: if params.remember_me { time.now().add_days(30) } else { time.now().add_days(1) }
 	) or { return error('') }
+	app.set_user(
+		access_token: auth_tokens.access_token
+		refresh_token: auth_tokens.refresh_token
+	)!
 	return auth_tokens
 }
 

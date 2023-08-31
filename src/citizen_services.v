@@ -10,13 +10,13 @@ import vweb
 // 	} or {panic(err)}
 // }
 
-// pub fn (app App) read_citizen(id string) ?Citizen {
-// 		citizen := sql app.db {
-// 			select from Citizen where id == id
-// 		} or {panic(err)}
-// 		return citizen[0] or {return none}
-// 		// return none
-// }
+pub fn (app App) read_citizen(id string) ?Citizen {
+		citizen := sql app.db {
+			select from Citizen where id == id
+		} or {panic(err)}
+		return citizen[0] or {return none}
+		// return none
+}
 
 // pub fn (app App) read_citizens() []Citizen {
 // 		citizens := sql app.db {

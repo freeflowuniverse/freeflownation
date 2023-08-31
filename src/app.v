@@ -12,9 +12,10 @@ import freeflowuniverse.spiderlib.auth
 pub struct App {
 	env_path string
 mut:
+	user_id string
 	db sqlite.DB
 pub mut:
-	logger &log.Logger [vweb_global] = &log.Logger(&log.Log{
+	logger &log.Logger = &log.Logger(&log.Log{
 		level: .debug
 	})
 	auth_client auth.Client
@@ -45,5 +46,16 @@ pub fn new(config AppConfig) App {
 		auth_client: auth.new_client(
 			auth_server: config.auth_server
 		)
+	}
+}
+
+pub struct SetUserParams {
+	access_token string
+	refresh_token string
+}
+
+pub fn (mut app App) set_user(params SetUserParams) ! {
+	app.user_id = app.auth_client.get_token_subject(params.access_token) or {
+		return AuthError{reason: .unauthenticated}
 	}
 }

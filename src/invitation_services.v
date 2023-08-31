@@ -1,18 +1,27 @@
 module freeflownation
 
+import toml
+
 // // CRUD invitation operations
 
 // returns false if code has been used or doesn't exist
-fn (mut app App) code_is_valid(code string) bool {
-	// invitations := sql app.db {
-	// 	select from Invitation where code == code
-	// } or { panic(err) }
-	// if invitations.len == 0 {
-	// 	return false
-	// }
-	// if invitations[0].invitee_id != '' {
-	// 	return false
-	// }
+fn (mut app App) invitation_is_valid(code string) bool {
+	// if code is master code invitation is valid
+	env := toml.parse_file(app.env_path) or { panic('Could not find .env, ${err}') }
+	master_code := env.value('MASTER_CODE').string()
+	if code == master_code {
+		return true
+	}
+
+	invitations := sql app.db {
+		select from Invitation where code == code
+	} or { panic(err) }
+	if invitations.len == 0 {
+		return false
+	}
+	if invitations[0].invitee_id != '' {
+		return false
+	}
 	return true
 }
 
@@ -28,11 +37,11 @@ fn (mut app App) use_invitation(params UseInvitation) {
 	// } or { panic(err) }
 }
 
-// fn (mut app App) create_invitation(invitation Invitation) {
-// 	sql app.db {
-// 		insert invitation into Invitation
-// 	} or { panic(err) }
-// }
+fn (mut app App) create_invitation(invitation Invitation) {
+	sql app.db {
+		insert invitation into Invitation
+	} or { panic(err) }
+}
 
 // pub fn (app App) read_invitation(id string) ?Invitation {
 // 		invitation := sql app.db {
